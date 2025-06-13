@@ -10,67 +10,79 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
+  Divider,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
 } from '@mui/material';
-import {
-  ScatterChart,
-  Scatter,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-} from 'recharts';
 
-// Sample data for Revenue Growth vs Scale
+// Sample data for heatmaps
 const revenueGrowthData = [
-  { scale: 1.0, growth: 0.1 },
-  { scale: 1.2, growth: 0.15 },
-  { scale: 1.4, growth: 0.2 },
-  { scale: 1.6, growth: 0.25 },
-  { scale: 1.8, growth: 0.3 },
-  { scale: 2.0, growth: 0.35 },
+  { ltmRev: '1M', growth: '10%', value: 5.2 },
+  { ltmRev: '1M', growth: '20%', value: 6.1 },
+  { ltmRev: '1M', growth: '30%', value: 7.3 },
+  { ltmRev: '5M', growth: '10%', value: 4.8 },
+  { ltmRev: '5M', growth: '20%', value: 5.6 },
+  { ltmRev: '5M', growth: '30%', value: 6.7 },
+  { ltmRev: '10M', growth: '10%', value: 4.5 },
+  { ltmRev: '10M', growth: '20%', value: 5.2 },
+  { ltmRev: '10M', growth: '30%', value: 6.3 },
 ];
 
-// Sample data for Revenue vs FCF
-const revenueFcfData = [
-  { revenue: 1000000, fcf: 200000 },
-  { revenue: 1500000, fcf: 350000 },
-  { revenue: 2000000, fcf: 500000 },
-  { revenue: 2500000, fcf: 650000 },
-  { revenue: 3000000, fcf: 800000 },
+const ntmFcfData = [
+  { ntmRev: '1M', fcf: '10%', value: 4.8 },
+  { ntmRev: '1M', fcf: '20%', value: 5.9 },
+  { ntmRev: '1M', fcf: '30%', value: 7.1 },
+  { ntmRev: '5M', fcf: '10%', value: 4.5 },
+  { ntmRev: '5M', fcf: '20%', value: 5.4 },
+  { ntmRev: '5M', fcf: '30%', value: 6.5 },
+  { ntmRev: '10M', fcf: '10%', value: 4.2 },
+  { ntmRev: '10M', fcf: '20%', value: 5.0 },
+  { ntmRev: '10M', fcf: '30%', value: 6.1 },
 ];
 
-// Sample data for Revenue vs OPEX
-const revenueOpexData = [
-  { revenue: 1000000, opex: 800000 },
-  { revenue: 1500000, opex: 1150000 },
-  { revenue: 2000000, opex: 1500000 },
-  { revenue: 2500000, opex: 1850000 },
-  { revenue: 3000000, opex: 2200000 },
+const ntmOpexData = [
+  { ntmRev: '1M', opex: '60%', value: 5.5 },
+  { ntmRev: '1M', opex: '70%', value: 4.8 },
+  { ntmRev: '1M', opex: '80%', value: 4.2 },
+  { ntmRev: '5M', opex: '60%', value: 5.2 },
+  { ntmRev: '5M', opex: '70%', value: 4.5 },
+  { ntmRev: '5M', opex: '80%', value: 3.9 },
+  { ntmRev: '10M', opex: '60%', value: 4.9 },
+  { ntmRev: '10M', opex: '70%', value: 4.3 },
+  { ntmRev: '10M', opex: '80%', value: 3.7 },
+];
+
+const marketMultiplesData = [
+  { ticker: 'AAPL', revenue: 5.2, ebitda: 12.5, fcf: 15.8 },
+  { ticker: 'GOOGL', revenue: 4.8, ebitda: 11.2, fcf: 14.5 },
+  { ticker: 'MSFT', revenue: 5.5, ebitda: 13.1, fcf: 16.2 },
+  { ticker: 'AMZN', revenue: 4.2, ebitda: 10.8, fcf: 13.9 },
 ];
 
 const years = ['2020', '2021', '2022', '2023'];
-const multiples = ['Revenue', 'EBITDA', 'FCF'];
 const companies = ['AAPL', 'GOOGL', 'MSFT', 'AMZN'];
+const multiples = ['Revenue', 'EBITDA', 'FCF'];
 
 export default function ValuationSensitivity() {
   const [selectedYear, setSelectedYear] = useState('2023');
-  const [selectedMultiple, setSelectedMultiple] = useState('Revenue');
   const [selectedCompanies, setSelectedCompanies] = useState<string[]>([]);
 
   const handleYearChange = (event: SelectChangeEvent) => {
     setSelectedYear(event.target.value);
   };
 
-  const handleMultipleChange = (event: SelectChangeEvent) => {
-    setSelectedMultiple(event.target.value);
-  };
-
   const handleCompanyChange = (event: SelectChangeEvent<string[]>) => {
     setSelectedCompanies(event.target.value as string[]);
+  };
+
+  const getHeatmapColor = (value: number) => {
+    const normalizedValue = (value - 3) / 5; // Assuming values range from 3 to 8
+    return `rgb(${255 * (1 - normalizedValue)}, ${255 * normalizedValue}, 0)`;
   };
 
   return (
@@ -79,10 +91,10 @@ export default function ValuationSensitivity() {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            Valuation Sensitivity Analysis
+            Valuation Model Sensitivity
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel>Year</InputLabel>
                 <Select value={selectedYear} onChange={handleYearChange}>
@@ -94,19 +106,7 @@ export default function ValuationSensitivity() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={4}>
-              <FormControl fullWidth>
-                <InputLabel>Multiple</InputLabel>
-                <Select value={selectedMultiple} onChange={handleMultipleChange}>
-                  {multiples.map((multiple) => (
-                    <MenuItem key={multiple} value={multiple}>
-                      {multiple}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel>Companies</InputLabel>
                 <Select
@@ -129,84 +129,196 @@ export default function ValuationSensitivity() {
 
       {/* Charts Section */}
       <Grid container spacing={3}>
-        {/* Revenue Growth vs Scale */}
-        <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Revenue Growth vs Scale
-              </Typography>
-              <Box sx={{ height: 300 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <ScatterChart>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="scale" name="Scale Factor" />
-                    <YAxis dataKey="growth" name="Revenue Growth" />
-                    <Tooltip />
-                    <Legend />
-                    <Scatter
-                      data={revenueGrowthData}
-                      fill="#143A38"
-                      name="Growth Impact"
-                    />
-                  </ScatterChart>
-                </ResponsiveContainer>
-              </Box>
-            </CardContent>
-          </Card>
+        <Grid item xs={12} md={8}>
+          <Grid container spacing={3}>
+            {/* Revenue Growth vs LTM Rev */}
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Revenue Growth vs LTM Rev
+                  </Typography>
+                  <TableContainer component={Paper}>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>LTM Rev</TableCell>
+                          <TableCell>10%</TableCell>
+                          <TableCell>20%</TableCell>
+                          <TableCell>30%</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {['1M', '5M', '10M'].map((ltmRev) => (
+                          <TableRow key={ltmRev}>
+                            <TableCell>{ltmRev}</TableCell>
+                            {['10%', '20%', '30%'].map((growth) => {
+                              const data = revenueGrowthData.find(
+                                (d) => d.ltmRev === ltmRev && d.growth === growth
+                              );
+                              return (
+                                <TableCell
+                                  key={growth}
+                                  sx={{
+                                    backgroundColor: getHeatmapColor(data?.value || 0),
+                                  }}
+                                >
+                                  {data?.value.toFixed(1)}x
+                                </TableCell>
+                              );
+                            })}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* NTM Rev vs FCF */}
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    NTM Rev vs FCF
+                  </Typography>
+                  <TableContainer component={Paper}>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>NTM Rev</TableCell>
+                          <TableCell>10%</TableCell>
+                          <TableCell>20%</TableCell>
+                          <TableCell>30%</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {['1M', '5M', '10M'].map((ntmRev) => (
+                          <TableRow key={ntmRev}>
+                            <TableCell>{ntmRev}</TableCell>
+                            {['10%', '20%', '30%'].map((fcf) => {
+                              const data = ntmFcfData.find(
+                                (d) => d.ntmRev === ntmRev && d.fcf === fcf
+                              );
+                              return (
+                                <TableCell
+                                  key={fcf}
+                                  sx={{
+                                    backgroundColor: getHeatmapColor(data?.value || 0),
+                                  }}
+                                >
+                                  {data?.value.toFixed(1)}x
+                                </TableCell>
+                              );
+                            })}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* NTM Rev vs OPEX */}
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    NTM Rev vs OPEX
+                  </Typography>
+                  <TableContainer component={Paper}>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>NTM Rev</TableCell>
+                          <TableCell>60%</TableCell>
+                          <TableCell>70%</TableCell>
+                          <TableCell>80%</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {['1M', '5M', '10M'].map((ntmRev) => (
+                          <TableRow key={ntmRev}>
+                            <TableCell>{ntmRev}</TableCell>
+                            {['60%', '70%', '80%'].map((opex) => {
+                              const data = ntmOpexData.find(
+                                (d) => d.ntmRev === ntmRev && d.opex === opex
+                              );
+                              return (
+                                <TableCell
+                                  key={opex}
+                                  sx={{
+                                    backgroundColor: getHeatmapColor(data?.value || 0),
+                                  }}
+                                >
+                                  {data?.value.toFixed(1)}x
+                                </TableCell>
+                              );
+                            })}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
         </Grid>
 
-        {/* Revenue vs FCF */}
-        <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Revenue vs FCF
-              </Typography>
-              <Box sx={{ height: 300 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <ScatterChart>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="revenue" name="Revenue" />
-                    <YAxis dataKey="fcf" name="FCF" />
-                    <Tooltip />
-                    <Legend />
-                    <Scatter
-                      data={revenueFcfData}
-                      fill="#DB3B3B"
-                      name="FCF Correlation"
-                    />
-                  </ScatterChart>
-                </ResponsiveContainer>
-              </Box>
-            </CardContent>
-          </Card>
+        <Grid item xs={12} md={0.5}>
+          <Divider orientation="vertical" flexItem sx={{ height: '100%' }} />
         </Grid>
 
-        {/* Revenue vs OPEX */}
-        <Grid item xs={12} md={4}>
+        {/* Market Multiples */}
+        <Grid item xs={12} md={3.5}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Revenue vs OPEX
+                Market Multiples
               </Typography>
-              <Box sx={{ height: 300 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={revenueOpexData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="revenue" />
-                    <YAxis dataKey="opex" />
-                    <Tooltip />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="opex"
-                      stroke="#D17800"
-                      name="Operating Expenses"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </Box>
+              <TableContainer component={Paper}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Ticker</TableCell>
+                      <TableCell>6.0x</TableCell>
+                      <TableCell>8.0x</TableCell>
+                      <TableCell>10.0x</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {marketMultiplesData.map((row) => (
+                      <TableRow key={row.ticker}>
+                        <TableCell>{row.ticker}</TableCell>
+                        <TableCell
+                          sx={{
+                            backgroundColor: getHeatmapColor(6.0),
+                          }}
+                        >
+                          6.0x
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            backgroundColor: getHeatmapColor(8.0),
+                          }}
+                        >
+                          8.0x
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            backgroundColor: getHeatmapColor(10.0),
+                          }}
+                        >
+                          10.0x
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </CardContent>
           </Card>
         </Grid>

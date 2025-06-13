@@ -11,6 +11,9 @@ import PercentileCheck from './components/PercentileCheck';
 import ValuationSensitivity from './components/ValuationSensitivity';
 import Benchmarks from './components/Benchmarks';
 import Values from './components/Values';
+import CurrentMetrics from './components/CurrentMetrics';
+import CaseStudies from './components/CaseStudies';
+import ConsensusValues from './components/ConsensusValues';
 import '@fontsource/poppins/300.css';
 import '@fontsource/poppins/400.css';
 import '@fontsource/poppins/500.css';
@@ -31,6 +34,9 @@ export default function App() {
             <Route path="/valuation-sensitivity" element={<ValuationSensitivity />} />
             <Route path="/benchmarks" element={<Benchmarks />} />
             <Route path="/values" element={<Values />} />
+            <Route path="/current-metrics" element={<CurrentMetrics />} />
+            <Route path="/case-studies" element={<CaseStudies />} />
+            <Route path="/consensus-values" element={<ConsensusValues />} />
           </Routes>
         </Layout>
       </Router>

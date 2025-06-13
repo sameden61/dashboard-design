@@ -4,8 +4,6 @@ import {
   Card,
   CardContent,
   Typography,
-  Grid,
-  Button,
   Table,
   TableBody,
   TableCell,
@@ -13,76 +11,59 @@ import {
   TableHead,
   TableRow,
   Paper,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
-  TextField,
-  IconButton,
+  Button,
   LinearProgress,
 } from '@mui/material';
-import {
-  Edit as EditIcon,
-  CloudUpload as CloudUploadIcon,
-  Save as SaveIcon,
-  Cancel as CancelIcon,
-} from '@mui/icons-material';
+import { CloudUpload as CloudUploadIcon } from '@mui/icons-material';
+
+type Company = 'AAPL' | 'GOOGL' | 'MSFT';
+type Year = 2020 | 2021 | 2022;
+type Metric = 'revenue' | 'ebitda' | 'fcf' | 'opex' | 'dilution' | 'netDebt';
+
+interface CompanyData {
+  revenue: number;
+  ebitda: number;
+  fcf: number;
+  opex: number;
+  dilution: number;
+  netDebt: number;
+}
+
+type YearData = Record<Year, CompanyData>;
+type CompanyYearData = Record<Company, YearData>;
 
 // Sample data for the table
-const initialData = [
-  {
-    year: 2020,
-    revenue: 1000000,
-    ebitda: 500000,
-    fcf: 400000,
-    opex: 800000,
-    capex: 100000,
+const initialData: CompanyYearData = {
+  AAPL: {
+    2020: { revenue: 1000000, ebitda: 500000, fcf: 400000, opex: 800000, dilution: 0, netDebt: -50000 },
+    2021: { revenue: 1200000, ebitda: 600000, fcf: 500000, opex: 960000, dilution: 0, netDebt: -60000 },
+    2022: { revenue: 1440000, ebitda: 720000, fcf: 600000, opex: 1152000, dilution: 0, netDebt: -72000 },
   },
-  {
-    year: 2021,
-    revenue: 1200000,
-    ebitda: 600000,
-    fcf: 500000,
-    opex: 960000,
-    capex: 120000,
+  GOOGL: {
+    2020: { revenue: 1500000, ebitda: 750000, fcf: 600000, opex: 1200000, dilution: 0, netDebt: -75000 },
+    2021: { revenue: 1800000, ebitda: 900000, fcf: 750000, opex: 1440000, dilution: 0, netDebt: -90000 },
+    2022: { revenue: 2160000, ebitda: 1080000, fcf: 900000, opex: 1728000, dilution: 0, netDebt: -108000 },
   },
-  {
-    year: 2022,
-    revenue: 1440000,
-    ebitda: 720000,
-    fcf: 600000,
-    opex: 1152000,
-    capex: 144000,
+  MSFT: {
+    2020: { revenue: 1300000, ebitda: 650000, fcf: 520000, opex: 1040000, dilution: 0, netDebt: -65000 },
+    2021: { revenue: 1560000, ebitda: 780000, fcf: 650000, opex: 1248000, dilution: 0, netDebt: -78000 },
+    2022: { revenue: 1872000, ebitda: 936000, fcf: 780000, opex: 1497600, dilution: 0, netDebt: -93600 },
   },
+};
+
+const companies: Company[] = ['AAPL', 'GOOGL', 'MSFT'];
+const years: Year[] = [2020, 2021, 2022];
+const metrics: { key: Metric; label: string }[] = [
+  { key: 'revenue', label: 'Revenue' },
+  { key: 'ebitda', label: 'EBITDA' },
+  { key: 'fcf', label: 'FCF' },
+  { key: 'opex', label: 'OPEX' },
+  { key: 'dilution', label: 'Dilution' },
+  { key: 'netDebt', label: 'Net Debt' },
 ];
 
-const companies = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'META'];
-
 export default function Values() {
-  const [selectedCompany, setSelectedCompany] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
-  const [tableData, setTableData] = useState(initialData);
   const [isUploading, setIsUploading] = useState(false);
-
-  const handleCompanyChange = (event: SelectChangeEvent) => {
-    setSelectedCompany(event.target.value);
-  };
-
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
-
-  const handleSave = () => {
-    setIsEditing(false);
-    // In a real application, this would save the data to a backend
-    console.log('Saving data:', tableData);
-  };
-
-  const handleCancel = () => {
-    setIsEditing(false);
-    setTableData(initialData);
-  };
 
   const handleUpload = () => {
     setIsUploading(true);
@@ -94,88 +75,8 @@ export default function Values() {
     }, 2000);
   };
 
-  const handleCellChange = (
-    year: number,
-    field: keyof typeof initialData[0],
-    value: string
-  ) => {
-    setTableData(
-      tableData.map((row) =>
-        row.year === year
-          ? { ...row, [field]: parseFloat(value) || 0 }
-          : row
-      )
-    );
-  };
-
   return (
     <Box sx={{ p: 3 }}>
-      {/* Header Section */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={4}>
-              <FormControl fullWidth>
-                <InputLabel>Company</InputLabel>
-                <Select
-                  value={selectedCompany}
-                  onChange={handleCompanyChange}
-                  label="Company"
-                >
-                  {companies.map((company) => (
-                    <MenuItem key={company} value={company}>
-                      {company}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={8}>
-              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                {isEditing ? (
-                  <>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      startIcon={<SaveIcon />}
-                      onClick={handleSave}
-                    >
-                      Save
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      startIcon={<CancelIcon />}
-                      onClick={handleCancel}
-                    >
-                      Cancel
-                    </Button>
-                  </>
-                ) : (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<EditIcon />}
-                    onClick={handleEdit}
-                  >
-                    Edit
-                  </Button>
-                )}
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  startIcon={<CloudUploadIcon />}
-                  onClick={handleUpload}
-                  disabled={isUploading}
-                >
-                  Upload
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-
       {/* Upload Interface */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
@@ -208,102 +109,44 @@ export default function Values() {
         </CardContent>
       </Card>
 
-      {/* Data Table */}
-      <Card>
-        <CardContent>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Year</TableCell>
-                  <TableCell>Revenue</TableCell>
-                  <TableCell>EBITDA</TableCell>
-                  <TableCell>FCF</TableCell>
-                  <TableCell>OPEX</TableCell>
-                  <TableCell>Capex</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {tableData.map((row) => (
-                  <TableRow key={row.year}>
-                    <TableCell>{row.year}</TableCell>
-                    <TableCell>
-                      {isEditing ? (
-                        <TextField
-                          size="small"
-                          type="number"
-                          value={row.revenue}
-                          onChange={(e) =>
-                            handleCellChange(row.year, 'revenue', e.target.value)
-                          }
-                        />
-                      ) : (
-                        row.revenue.toLocaleString()
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {isEditing ? (
-                        <TextField
-                          size="small"
-                          type="number"
-                          value={row.ebitda}
-                          onChange={(e) =>
-                            handleCellChange(row.year, 'ebitda', e.target.value)
-                          }
-                        />
-                      ) : (
-                        row.ebitda.toLocaleString()
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {isEditing ? (
-                        <TextField
-                          size="small"
-                          type="number"
-                          value={row.fcf}
-                          onChange={(e) =>
-                            handleCellChange(row.year, 'fcf', e.target.value)
-                          }
-                        />
-                      ) : (
-                        row.fcf.toLocaleString()
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {isEditing ? (
-                        <TextField
-                          size="small"
-                          type="number"
-                          value={row.opex}
-                          onChange={(e) =>
-                            handleCellChange(row.year, 'opex', e.target.value)
-                          }
-                        />
-                      ) : (
-                        row.opex.toLocaleString()
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {isEditing ? (
-                        <TextField
-                          size="small"
-                          type="number"
-                          value={row.capex}
-                          onChange={(e) =>
-                            handleCellChange(row.year, 'capex', e.target.value)
-                          }
-                        />
-                      ) : (
-                        row.capex.toLocaleString()
-                      )}
-                    </TableCell>
+      {/* Data Tables */}
+      {companies.map((company) => (
+        <Card key={company} sx={{ mb: 3 }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              {company}
+            </Typography>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Metric</TableCell>
+                    {years.map((year) => (
+                      <TableCell key={year} align="right">
+                        {year}
+                      </TableCell>
+                    ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
+                </TableHead>
+                <TableBody>
+                  {metrics.map((metric) => (
+                    <TableRow key={metric.key}>
+                      <TableCell component="th" scope="row">
+                        {metric.label}
+                      </TableCell>
+                      {years.map((year) => (
+                        <TableCell key={year} align="right">
+                          {initialData[company][year][metric.key].toLocaleString()}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </CardContent>
+        </Card>
+      ))}
     </Box>
   );
 } 

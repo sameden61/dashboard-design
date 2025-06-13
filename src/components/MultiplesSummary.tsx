@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -10,7 +10,9 @@ import {
   TableRow,
   Paper,
   TextField,
+  Button,
 } from '@mui/material';
+import { Refresh as RefreshIcon } from '@mui/icons-material';
 
 // Sample data for tickers
 const tickers = ['AAPL', 'GOOGL', 'MSFT', 'AMZN'];
@@ -20,7 +22,7 @@ const tickerData = {
   AAPL: [
     { 
       year: 2020, 
-      valModel: 'DCF', 
+      valModel: '10', 
       percentile: 25, 
       caseStudyValue: 0.85,
       caseStudyId: 'PANW_202005',
@@ -31,7 +33,7 @@ const tickerData = {
     },
     { 
       year: 2021, 
-      valModel: 'DCF', 
+      valModel: '10', 
       percentile: 30, 
       caseStudyValue: 0.92,
       caseStudyId: 'PANW_202106',
@@ -44,7 +46,7 @@ const tickerData = {
   GOOGL: [
     { 
       year: 2020, 
-      valModel: 'DCF', 
+      valModel: '10', 
       percentile: 20, 
       caseStudyValue: 0.78,
       caseStudyId: 'PANW_202003',
@@ -55,7 +57,7 @@ const tickerData = {
     },
     { 
       year: 2021, 
-      valModel: 'DCF', 
+      valModel: '10', 
       percentile: 25, 
       caseStudyValue: 0.81,
       caseStudyId: 'PANW_202104',
@@ -68,8 +70,41 @@ const tickerData = {
 };
 
 export default function MultiplesSummary() {
+  const [editedValues, setEditedValues] = useState<Record<string, Record<number, number>>>({});
+  const [hasChanges, setHasChanges] = useState(false);
+
+  const handleFinalMultipleChange = (ticker: string, year: number, value: number) => {
+    setEditedValues(prev => ({
+      ...prev,
+      [ticker]: {
+        ...prev[ticker],
+        [year]: value
+      }
+    }));
+    setHasChanges(true);
+  };
+
+  const handleRefresh = () => {
+    // Here you would typically make an API call to update the values
+    console.log('Refreshing with new values:', editedValues);
+    setHasChanges(false);
+    setEditedValues({});
+  };
+
   return (
     <Box sx={{ p: 2 }}>
+      {hasChanges && (
+        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+          <Button
+            variant="contained"
+            startIcon={<RefreshIcon />}
+            onClick={handleRefresh}
+            size="small"
+          >
+            Refresh Changes
+          </Button>
+        </Box>
+      )}
       {tickers.map((ticker) => (
         <Box key={ticker} sx={{ mb: 2 }}>
           <Typography variant="h6" sx={{ mb: 1 }}>{ticker}</Typography>
@@ -100,8 +135,8 @@ export default function MultiplesSummary() {
                       <TextField
                         size="small"
                         type="number"
-                        value={row.finalMultiple}
-                        onChange={() => {}}
+                        value={editedValues[ticker]?.[row.year] ?? row.finalMultiple}
+                        onChange={(e) => handleFinalMultipleChange(ticker, row.year, parseFloat(e.target.value))}
                       />
                     </TableCell>
                     <TableCell sx={{ borderLeft: '2px solid #e0e0e0' }}>
