@@ -47,6 +47,13 @@ const priceReferenceData = [
   { ticker: 'MSFT', currentPrice: 280.50, priceAt5: 266.50, priceAt12: 253.75, priceAt17_7: 242.50, priceAt25: 228.00 },
 ];
 
+// Sample data for IRR projections
+const irrProjectionData = [
+  { ticker: 'AAPL', exposure: 25, irr2029: 15.2, irr2030: 17.8, irr2031: 20.1 },
+  { ticker: 'GOOGL', exposure: 20, irr2029: 12.5, irr2030: 14.3, irr2031: 16.2 },
+  { ticker: 'MSFT', exposure: 30, irr2029: 18.3, irr2030: 21.5, irr2031: 24.8 },
+];
+
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
@@ -67,6 +74,7 @@ export default function Dashboard() {
 
   return (
     <Grid container spacing={3}>
+      {/* Row 1 */}
       {/* Exposure vs IRR Chart */}
       <Grid item xs={12} md={6}>
         <Card>
@@ -89,42 +97,32 @@ export default function Dashboard() {
         </Card>
       </Grid>
 
-      {/* Price Table */}
+      {/* IRR Projection Table */}
       <Grid item xs={12} md={6}>
         <Card>
           <CardContent>
             <Typography variant="h6" gutterBottom>
-              Price Tracking
+              IRR Projections
             </Typography>
             <Box sx={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
                     <th style={{ textAlign: 'left', padding: '8px' }}>Ticker</th>
-                    <th style={{ textAlign: 'right', padding: '8px' }}>Current Price</th>
-                    <th style={{ textAlign: 'right', padding: '8px' }}>Change Today</th>
-                    <th style={{ textAlign: 'right', padding: '8px' }}>Δ% 1M</th>
-                    <th style={{ textAlign: 'right', padding: '8px' }}>Δ% 3M</th>
-                    <th style={{ textAlign: 'right', padding: '8px' }}>Δ% 6M</th>
+                    <th style={{ textAlign: 'right', padding: '8px' }}>Exposure</th>
+                    <th style={{ textAlign: 'right', padding: '8px' }}>IRR 2029</th>
+                    <th style={{ textAlign: 'right', padding: '8px' }}>IRR 2030</th>
+                    <th style={{ textAlign: 'right', padding: '8px' }}>IRR 2031</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {priceData.map((row) => (
+                  {irrProjectionData.map((row) => (
                     <tr key={row.ticker}>
                       <td style={{ padding: '8px' }}>{row.ticker}</td>
-                      <td style={{ textAlign: 'right', padding: '8px' }}>${row.currentPrice.toFixed(2)}</td>
-                      <td style={{ textAlign: 'right', padding: '8px', color: row.changeToday >= 0 ? 'green' : 'red' }}>
-                        {row.changeToday >= 0 ? '+' : ''}{row.changeToday}%
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '8px', color: row.change1M >= 0 ? 'green' : 'red' }}>
-                        {row.change1M >= 0 ? '+' : ''}{row.change1M}%
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '8px', color: row.change3M >= 0 ? 'green' : 'red' }}>
-                        {row.change3M >= 0 ? '+' : ''}{row.change3M}%
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '8px', color: row.change6M >= 0 ? 'green' : 'red' }}>
-                        {row.change6M >= 0 ? '+' : ''}{row.change6M}%
-                      </td>
+                      <td style={{ textAlign: 'right', padding: '8px' }}>{row.exposure}%</td>
+                      <td style={{ textAlign: 'right', padding: '8px' }}>{row.irr2029}%</td>
+                      <td style={{ textAlign: 'right', padding: '8px' }}>{row.irr2030}%</td>
+                      <td style={{ textAlign: 'right', padding: '8px' }}>{row.irr2031}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -134,6 +132,7 @@ export default function Dashboard() {
         </Card>
       </Grid>
 
+      {/* Row 2 */}
       {/* Multiples Summary */}
       <Grid item xs={12} md={6}>
         <Card>
@@ -251,8 +250,54 @@ export default function Dashboard() {
         </Card>
       </Grid>
 
+      {/* Row 3 */}
+      {/* Price Table */}
+      <Grid item xs={12} md={6}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Price Tracking
+            </Typography>
+            <Box sx={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    <th style={{ textAlign: 'left', padding: '8px' }}>Ticker</th>
+                    <th style={{ textAlign: 'right', padding: '8px' }}>Current Price</th>
+                    <th style={{ textAlign: 'right', padding: '8px' }}>Change Today</th>
+                    <th style={{ textAlign: 'right', padding: '8px' }}>Δ% 1M</th>
+                    <th style={{ textAlign: 'right', padding: '8px' }}>Δ% 3M</th>
+                    <th style={{ textAlign: 'right', padding: '8px' }}>Δ% 6M</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {priceData.map((row) => (
+                    <tr key={row.ticker}>
+                      <td style={{ padding: '8px' }}>{row.ticker}</td>
+                      <td style={{ textAlign: 'right', padding: '8px' }}>${row.currentPrice.toFixed(2)}</td>
+                      <td style={{ textAlign: 'right', padding: '8px', color: row.changeToday >= 0 ? 'green' : 'red' }}>
+                        {row.changeToday >= 0 ? '+' : ''}{row.changeToday}%
+                      </td>
+                      <td style={{ textAlign: 'right', padding: '8px', color: row.change1M >= 0 ? 'green' : 'red' }}>
+                        {row.change1M >= 0 ? '+' : ''}{row.change1M}%
+                      </td>
+                      <td style={{ textAlign: 'right', padding: '8px', color: row.change3M >= 0 ? 'green' : 'red' }}>
+                        {row.change3M >= 0 ? '+' : ''}{row.change3M}%
+                      </td>
+                      <td style={{ textAlign: 'right', padding: '8px', color: row.change6M >= 0 ? 'green' : 'red' }}>
+                        {row.change6M >= 0 ? '+' : ''}{row.change6M}%
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Box>
+          </CardContent>
+        </Card>
+      </Grid>
+
       {/* Price Reference Table */}
-      <Grid item xs={12}>
+      <Grid item xs={12} md={6}>
         <Card>
           <CardContent>
             <Typography variant="h6" gutterBottom>
