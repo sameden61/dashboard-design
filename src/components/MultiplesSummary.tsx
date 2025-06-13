@@ -1,12 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
-  Card,
-  CardContent,
   Typography,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Table,
   TableBody,
   TableCell,
@@ -15,21 +10,7 @@ import {
   TableRow,
   Paper,
   TextField,
-  IconButton,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Grid,
 } from '@mui/material';
-import {
-  ExpandMore as ExpandMoreIcon,
-  Add as AddIcon,
-  Delete as DeleteIcon,
-} from '@mui/icons-material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 // Sample data for tickers
 const tickers = ['AAPL', 'GOOGL', 'MSFT', 'AMZN'];
@@ -37,175 +18,107 @@ const tickers = ['AAPL', 'GOOGL', 'MSFT', 'AMZN'];
 // Sample data for each ticker
 const tickerData = {
   AAPL: [
-    { year: 2020, volume: 1000000, percent: 25, check: true, caseStudy: 'Case A', financing: 'Series A', ebitda: 500000, fcf: 400000 },
-    { year: 2021, volume: 1200000, percent: 30, check: true, caseStudy: 'Case B', financing: 'Series B', ebitda: 600000, fcf: 500000 },
+    { 
+      year: 2020, 
+      valModel: 'DCF', 
+      percentile: 25, 
+      caseStudyValue: 0.85,
+      caseStudyId: 'PANW_202005',
+      finalMultiple: 8.5,
+      ebitdaMultiple: 12.3,
+      fcfMultiple: 15.2,
+      marketMultiple: 10.1
+    },
+    { 
+      year: 2021, 
+      valModel: 'DCF', 
+      percentile: 30, 
+      caseStudyValue: 0.92,
+      caseStudyId: 'PANW_202106',
+      finalMultiple: 9.2,
+      ebitdaMultiple: 13.1,
+      fcfMultiple: 16.0,
+      marketMultiple: 11.2
+    },
   ],
   GOOGL: [
-    { year: 2020, volume: 800000, percent: 20, check: true, caseStudy: 'Case C', financing: 'Series A', ebitda: 400000, fcf: 300000 },
-    { year: 2021, volume: 1000000, percent: 25, check: false, caseStudy: 'Case D', financing: 'Series B', ebitda: 500000, fcf: 400000 },
+    { 
+      year: 2020, 
+      valModel: 'DCF', 
+      percentile: 20, 
+      caseStudyValue: 0.78,
+      caseStudyId: 'PANW_202003',
+      finalMultiple: 7.8,
+      ebitdaMultiple: 11.5,
+      fcfMultiple: 14.3,
+      marketMultiple: 9.5
+    },
+    { 
+      year: 2021, 
+      valModel: 'DCF', 
+      percentile: 25, 
+      caseStudyValue: 0.81,
+      caseStudyId: 'PANW_202104',
+      finalMultiple: 8.1,
+      ebitdaMultiple: 12.0,
+      fcfMultiple: 14.8,
+      marketMultiple: 9.8
+    },
   ],
 };
 
 export default function MultiplesSummary() {
-  const [selectedTickers, setSelectedTickers] = useState<string[]>([]);
-  const [startDate, setStartDate] = useState<Date | null>(new Date('2020-01-01'));
-  const [endDate, setEndDate] = useState<Date | null>(new Date('2021-12-31'));
-
-  const handleTickerChange = (event: any) => {
-    setSelectedTickers(event.target.value);
-  };
-
-  const handleAddRow = (ticker: string) => {
-    // In a real application, this would add a new row to the data
-    console.log('Adding row for', ticker);
-  };
-
-  const handleDeleteRow = (ticker: string, year: number) => {
-    // In a real application, this would delete the row from the data
-    console.log('Deleting row for', ticker, year);
-  };
-
   return (
-    <Box sx={{ p: 3 }}>
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Select Ticker</InputLabel>
-                <Select
-                  multiple
-                  value={selectedTickers}
-                  onChange={handleTickerChange}
-                  renderValue={(selected) => (selected as string[]).join(', ')}
-                >
-                  {tickers.map((ticker) => (
-                    <MenuItem key={ticker} value={ticker}>
-                      {ticker}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  label="Start Date"
-                  value={startDate}
-                  onChange={(newValue) => setStartDate(newValue)}
-                />
-              </LocalizationProvider>
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  label="End Date"
-                  value={endDate}
-                  onChange={(newValue) => setEndDate(newValue)}
-                />
-              </LocalizationProvider>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-
+    <Box sx={{ p: 2 }}>
       {tickers.map((ticker) => (
-        <Accordion key={ticker}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h6">{ticker}</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Year</TableCell>
-                    <TableCell>Volume</TableCell>
-                    <TableCell>Percent</TableCell>
-                    <TableCell>Check</TableCell>
-                    <TableCell>Case Study</TableCell>
-                    <TableCell>Financing</TableCell>
-                    <TableCell>EBITDA</TableCell>
-                    <TableCell>FCF</TableCell>
-                    <TableCell>Actions</TableCell>
+        <Box key={ticker} sx={{ mb: 2 }}>
+          <Typography variant="h6" sx={{ mb: 1 }}>{ticker}</Typography>
+          <TableContainer component={Paper} sx={{ mb: 1 }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Year</TableCell>
+                  <TableCell>Val Model</TableCell>
+                  <TableCell>Percentile</TableCell>
+                  <TableCell>Case Study Value</TableCell>
+                  <TableCell>Case Study ID</TableCell>
+                  <TableCell>Final Multiple</TableCell>
+                  <TableCell sx={{ borderLeft: '2px solid #e0e0e0' }}>EBITDA Multiple</TableCell>
+                  <TableCell>FCF Multiple</TableCell>
+                  <TableCell sx={{ borderLeft: '2px solid #e0e0e0' }}>Market Multiple</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {tickerData[ticker as keyof typeof tickerData]?.map((row) => (
+                  <TableRow key={row.year}>
+                    <TableCell>{row.year}</TableCell>
+                    <TableCell>{row.valModel}</TableCell>
+                    <TableCell>{row.percentile}</TableCell>
+                    <TableCell>{row.caseStudyValue}</TableCell>
+                    <TableCell>{row.caseStudyId}</TableCell>
+                    <TableCell>
+                      <TextField
+                        size="small"
+                        type="number"
+                        value={row.finalMultiple}
+                        onChange={() => {}}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ borderLeft: '2px solid #e0e0e0' }}>
+                      {row.ebitdaMultiple}
+                    </TableCell>
+                    <TableCell>
+                      {row.fcfMultiple}
+                    </TableCell>
+                    <TableCell sx={{ borderLeft: '2px solid #e0e0e0' }}>
+                      {row.marketMultiple}
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {tickerData[ticker as keyof typeof tickerData]?.map((row) => (
-                    <TableRow key={row.year}>
-                      <TableCell>{row.year}</TableCell>
-                      <TableCell>
-                        <TextField
-                          size="small"
-                          type="number"
-                          value={row.volume}
-                          onChange={() => {}}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <TextField
-                          size="small"
-                          type="number"
-                          value={row.percent}
-                          onChange={() => {}}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <input type="checkbox" checked={row.check} onChange={() => {}} />
-                      </TableCell>
-                      <TableCell>
-                        <TextField
-                          size="small"
-                          value={row.caseStudy}
-                          onChange={() => {}}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <TextField
-                          size="small"
-                          value={row.financing}
-                          onChange={() => {}}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <TextField
-                          size="small"
-                          type="number"
-                          value={row.ebitda}
-                          onChange={() => {}}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <TextField
-                          size="small"
-                          type="number"
-                          value={row.fcf}
-                          onChange={() => {}}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <IconButton
-                          size="small"
-                          onClick={() => handleDeleteRow(ticker, row.year)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-              <IconButton
-                color="primary"
-                onClick={() => handleAddRow(ticker)}
-              >
-                <AddIcon />
-              </IconButton>
-            </Box>
-          </AccordionDetails>
-        </Accordion>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       ))}
     </Box>
   );
