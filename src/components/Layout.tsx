@@ -54,10 +54,8 @@ export default function Layout({ children }: LayoutProps) {
     
     // Values Group
     { text: 'Values', icon: <AnalyticsIcon />, path: null, isGroup: true },
-    { text: 'Forward Values', icon: <TableChartIcon />, path: '/values', isGroup: true },
     { text: 'Current Metrics', icon: <BarChartIcon />, path: '/current-metrics', isGroup: true },
     { text: 'Metric Benchmarks', icon: <CompareArrowsIcon />, path: '/benchmarks', isGroup: true },
-    { text: 'Consensus Values', icon: <BarChartIcon />, path: '/consensus-values', isGroup: true },
     
     // Multiples Group
     { text: 'Multiples', icon: <AnalyticsIcon />, path: null, isGroup: true },
@@ -65,6 +63,11 @@ export default function Layout({ children }: LayoutProps) {
     { text: 'Percentile Check', icon: <PercentIcon />, path: '/percentile-check', isGroup: true },
     { text: 'Market Multiple', icon: <TrendingUpIcon />, path: '/market-multiple', isGroup: true },
     { text: 'Valuation Sensitivity', icon: <ShowChartIcon />, path: '/valuation-sensitivity', isGroup: true },
+    
+    // Input Group
+    { text: 'Input', icon: <AnalyticsIcon />, path: null, isGroup: true },
+    { text: 'Forward Values', icon: <TableChartIcon />, path: '/values', isGroup: true },
+    { text: 'Consensus Values', icon: <BarChartIcon />, path: '/consensus-values', isGroup: true },
     
     // Case Studies
     { text: 'Case Studies', icon: <BookIcon />, path: '/case-studies' },
